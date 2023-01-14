@@ -2,13 +2,11 @@ from fastapi import FastAPI
 import uvicorn
 
 from db.base import database
+from handlers import menu
 
 
-app = FastAPI()
-
-@app.get('/')
-async def root():
-    return {'message': 'Hello World'}
+app = FastAPI(title='YLAB MENU')
+app.include_router(menu.router, prefix='/api/v1/menus', tags=['menus'])
 
 @app.on_event('startup')
 async def startup():

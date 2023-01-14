@@ -1,4 +1,4 @@
-from .models import menus, sub_menus, dishes
+from .tables import menus, sub_menus, dishes
 from .base import metadata, engine
 
 
