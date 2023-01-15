@@ -1,6 +1,6 @@
 import sqlalchemy
 
-from .base import metadata
+from db.base import metadata
 
 
 menus = sqlalchemy.Table(

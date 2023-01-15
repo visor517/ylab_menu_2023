@@ -1,4 +1,6 @@
-databases==0.7.0        # [postgresql]
+databases==0.7.0
+databases[postgresql]
+python-dotenv==0.21.0
 fastapi==0.89.1
 psycopg2-binary==2.9.5
 sqlalchemy==1.4.46
