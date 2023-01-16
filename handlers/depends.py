@@ -1,5 +1,5 @@
 from db.base import database
-from db.repository import MenuRepository
+from repositories.menu import MenuRepository
 
 
 def get_menu_repository() -> MenuRepository:

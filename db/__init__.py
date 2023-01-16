@@ -1,5 +1,5 @@
 from .tables import menus, sub_menus, dishes
-from .base import metadata, engine
+from db.base import metadata, engine
 
 # сбрасываем
 metadata.drop_all(bind=engine)

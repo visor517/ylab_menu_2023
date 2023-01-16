@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from typing import List
 
-from db.repository import MenuRepository
+from repositories.menu import MenuRepository
 from .depends import get_menu_repository
-from models import Menu
+from models import Menu, MenuIn
 
 
 router = APIRouter()
@@ -16,15 +16,23 @@ async def get_menus(
     return await menus.get_all(limit=limit, offset=offset)
 
 
-# @router.get('/<id>')
-# async def get_menu_by_id(
-#     menu: MenuRepository = Depends(get_menu_repository),
-#     id: int = id):
-#     return menu.get_by_id(id=id)
+@router.get('/{id}', response_model=Menu)
+async def get_menu_by_id(
+    menus: MenuRepository = Depends(get_menu_repository),
+    id: str = id):
+    return await menus.get_by_id(id=id)
 
 
 @router.post('/', response_model=Menu, status_code=201)
 async def create_menu(
-    menu: Menu,
+    menu: MenuIn,
     menus: MenuRepository = Depends(get_menu_repository)):
     return await menus.create(m=menu)
+
+
+@router.patch('/{id}', response_model=Menu, status_code=200)
+async def update_menu(
+    menu: MenuIn,
+    menus: MenuRepository = Depends(get_menu_repository),
+    id: str = id):
+    return await menus.update(id=id, m=menu)

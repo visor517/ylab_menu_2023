@@ -1,14 +1,10 @@
 from typing import List, Optional
-
-from databases import Database
-
-from db.tables import menus, sub_menus, dishes
-from models import Menu, SubMenu, Dish
+import uuid
 
 
-class BaseRepository:
-    def __init__(self, database: Database):
-        self.database = database
+from repositories.base import BaseRepository
+from db.tables import menus
+from models import Menu, MenuIn
 
 
 class MenuRepository(BaseRepository):
@@ -16,30 +12,29 @@ class MenuRepository(BaseRepository):
         query = menus.select().limit(limit).offset(offset)
         return await self.database.fetch_all(query)
 
-    async def get_by_id(self, id: int) -> Optional[Menu]:
+    async def get_by_id(self, id: str) -> Optional[Menu]:
         query = menus.select().where(menus.c.id==id)
         if menu := await self.database.fetch_one(query):
             return Menu.parse_obj(menu)
 
-    async def create(self, m):
+    async def create(self, m: MenuIn):
         menu = Menu(
+            id=str(uuid.uuid1()),
             title=m.title,
             description=m.description,
         )
         values = {**menu.dict()}
-        values.pop('id', None)
         query = menus.insert().values(**values)
-        menu.id = await self.database.execute(query)
+        await self.database.execute(query)
         return menu
 
-    async def update(self, id: int, m):
+    async def update(self, id: str, m: MenuIn):
         menu = Menu(
             id=id,
             title=m.title,
             description=m.description,
         )
         values = {**menu.dict()}
-        values.pop('id', None)
         query = menus.update().where(menus.c.id==id).values(**values)
         await self.database.execute(query)
         return menu
