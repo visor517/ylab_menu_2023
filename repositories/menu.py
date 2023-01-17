@@ -16,6 +16,7 @@ class MenuRepository(BaseRepository):
         query = menus.select().where(menus.c.id==id)
         if menu := await self.database.fetch_one(query):
             return Menu.parse_obj(menu)
+        return None
 
     async def create(self, m: MenuIn):
         menu = Menu(
@@ -42,4 +43,3 @@ class MenuRepository(BaseRepository):
     async def delete(self, id: str):
         query = menus.delete().where(menus.c.id==id)
         await self.database.execute(query)
-        return {"status": True, "message": "The menu has been deleted"}

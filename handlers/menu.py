@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends
-from typing import List
+from fastapi import APIRouter, Depends, HTTPException
+from typing import List, Union
 
 from repositories.menu import MenuRepository
 from .depends import get_menu_repository
@@ -20,7 +20,9 @@ async def read_menus(
 async def read_menu_by_id(
     menus: MenuRepository = Depends(get_menu_repository),
     id: str = id):
-    return await menus.get_by_id(id=id)
+    if not (menu := await menus.get_by_id(id=id)):
+        raise HTTPException(status_code=404, detail='menu not found')
+    return menu      
 
 
 @router.post('/', response_model=Menu, status_code=201)
@@ -42,4 +44,5 @@ async def update_menu(
 async def delete_menu(
     menus: MenuRepository = Depends(get_menu_repository),
     id: str = id):
-    return await menus.delete(id=id)
+    await menus.delete(id=id)
+    return {'status': True, 'message': 'The menu has been deleted'}
