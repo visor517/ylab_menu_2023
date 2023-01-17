@@ -9,7 +9,7 @@ from models import Menu, MenuIn
 router = APIRouter()
 
 @router.get('/', response_model=List[Menu])
-async def get_menus(
+async def read_menus(
     menus: MenuRepository = Depends(get_menu_repository),
     limit: int = 100, 
     offset: int = 0):
@@ -17,7 +17,7 @@ async def get_menus(
 
 
 @router.get('/{id}', response_model=Menu)
-async def get_menu_by_id(
+async def read_menu_by_id(
     menus: MenuRepository = Depends(get_menu_repository),
     id: str = id):
     return await menus.get_by_id(id=id)
@@ -36,3 +36,10 @@ async def update_menu(
     menus: MenuRepository = Depends(get_menu_repository),
     id: str = id):
     return await menus.update(id=id, m=menu)
+
+
+@router.delete('/{id}', status_code=200)
+async def delete_menu(
+    menus: MenuRepository = Depends(get_menu_repository),
+    id: str = id):
+    return await menus.delete(id=id)
