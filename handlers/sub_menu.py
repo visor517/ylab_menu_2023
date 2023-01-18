@@ -4,7 +4,7 @@ import uuid
 
 from models import SubMenu, SubMenuIn
 from db.base import database
-from db.tables import sub_menus
+from db.tables import sub_menus, dishes
 
 router = APIRouter()
 
@@ -19,7 +19,9 @@ async def read_sub_menu_by_id(menu_id: str, sub_id: str):
     query = sub_menus.select().where(sub_menus.c.menu==menu_id, sub_menus.c.id==sub_id)
     if not (sub_menu := await database.fetch_one(query)):
         raise HTTPException(status_code=404, detail='submenu not found')
-    return sub_menu      
+    
+    count = await count_dishes(sub_id)
+    return SubMenu(**sub_menu, dishes_count=count)     
 
 
 @router.post('/{menu_id}/submenus', response_model=SubMenu, status_code=201)
@@ -59,3 +61,9 @@ async def delete_sub_menu(menu_id: str, sub_id: str):
     query = sub_menus.delete().where(sub_menus.c.id==sub_id, sub_menus.c.menu==menu_id)
     await database.execute(query) 
     return {'status': True, 'message': 'The submenu has been deleted'}
+
+
+async def count_dishes(sub_id: str):
+    query = dishes.select().where(dishes.c.sub_menu==sub_id)
+    dish = await database.fetch_all(query)
+    return len(dish)

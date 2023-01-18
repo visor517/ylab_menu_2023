@@ -2,9 +2,11 @@ from fastapi import APIRouter, HTTPException
 from typing import List
 import uuid
 
-from models import Menu, MenuIn
+from models import Menu, MenuIn, SubMenu
 from db.base import database
-from db.tables import menus
+from db.tables import menus, sub_menus, dishes
+from sqlalchemy.sql.expression import func, select
+
 
 router = APIRouter()
 
@@ -19,7 +21,13 @@ async def read_menu_by_id(menu_id: str):
     query = menus.select().where(menus.c.id==menu_id)
     if not (menu := await database.fetch_one(query)):
         raise HTTPException(status_code=404, detail='menu not found')
-    return menu      
+
+    submenus_count, dishes_count = await count_extra_params(menu_id)
+    return Menu(
+        **menu,
+        submenus_count=submenus_count,
+        dishes_count=dishes_count,
+    )
 
 
 @router.post('/', response_model=Menu, status_code=201)
@@ -58,3 +66,17 @@ async def delete_sub_menu(menu_id: str):
     query = menus.delete().where(menus.c.id==menu_id)
     await database.execute(query) 
     return {'status': True, 'message': 'The menu has been deleted'}
+
+
+async def count_extra_params(menu_id: str):
+    query = sub_menus.select().where(sub_menus.c.menu==menu_id)
+    sub_menu_list = await database.fetch_all(query)
+    dishes_count = 0
+    print(sub_menu_list)
+    for sub in sub_menu_list:
+        sub_id = sub['id']
+        query = dishes.select().where(dishes.c.sub_menu==sub_id)
+        dishes_list = await database.fetch_all(query)
+        dishes_count += len(dishes_list)
+
+    return (len(sub_menu_list), dishes_count)

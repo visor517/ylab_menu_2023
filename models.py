@@ -6,6 +6,8 @@ class Menu(BaseModel):
     id: str
     title: str
     description: str
+    submenus_count: int = 0
+    dishes_count: int = 0
 
 
 class MenuIn(BaseModel):
