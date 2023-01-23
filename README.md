@@ -1,6 +1,6 @@
 # ylab_menu_2023
 
-Python 3.9
+Python 3.10
 
 Настройки для базы записываются в config.py
 Зависимости в requirements.txt 
