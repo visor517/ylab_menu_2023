@@ -12,14 +12,14 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         # await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
-    print('Database connected')
+    print("Database connected")
     yield
     await engine.dispose()
-    print('Database disconnected')
+    print("Database disconnected")
 
 
-app = FastAPI(title='MENU', lifespan=lifespan)
+app = FastAPI(title="MENU", lifespan=lifespan)
 
-app.include_router(menu.router, prefix='/api/v1/menus', tags=['menus'])
-app.include_router(sub_menu.router, prefix='/api/v1/menus', tags=['submenus'])
-app.include_router(dish.router, prefix='/api/v1/menus', tags=['dishes'])
+app.include_router(menu.router, prefix="/api/v1/menus", tags=["menus"])
+app.include_router(sub_menu.router, prefix="/api/v1/menus", tags=["submenus"])
+app.include_router(dish.router, prefix="/api/v1/menus", tags=["dishes"])
